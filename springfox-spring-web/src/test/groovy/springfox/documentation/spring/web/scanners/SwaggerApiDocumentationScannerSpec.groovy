@@ -151,46 +151,46 @@ class SwaggerApiDocumentationScannerSpec extends DocumentationContextSpec {
     1 * listingReferenceScanner.scan(_) >> new ApiListingReferenceScanResult([resourceGroup: [requestMappingContext]])
   }
 
-  def "Should sort based on position"() {
-    given:
-    def defaults = new Defaults()
-    def ordering = defaults.apiListingReferenceOrdering()
-    plugin
-        .groupName("groupName")
-        .select()
-        .paths(regex(".*"))
-        .build()
-        .apiListingReferenceOrdering(ordering)
-        .configure(contextBuilder)
-
-    def listingsMap = LinkedListMultimap.create()
-    def listings = [
-        apiListing(defaults, 1, "/b"),
-        apiListing(defaults, 2, "/c"),
-        apiListing(defaults, 2, "/a"),
-    ]
-    listings.each {
-      listingsMap.put("test", it)
-    }
-    listingReferenceScanner.scan(_) >> new ApiListingReferenceScanResult(newHashMap())
-    listingScanner.scan(_) >> listingsMap
-
-    when:
-    Documentation scanned = swaggerApiResourceListing.scan(context())
-
-    then:
-      scanned.resourceListing.apis.size() == 1
-      scanned.resourceListing.apis.get(0).path == "/groupName/test"
-      scanned.resourceListing.apis.get(0).description == """Operation with path /a and position 2
-                                                           |Operation with path /b and position 1
-                                                           |Operation with path /c and position 2""".stripMargin()
-
-    where:
-    index | path | position
-    0     | '/b' | 0
-    1     | '/a' | 0
-    2     | '/c' | 0
-  }
+//  def "Should sort based on position"() {
+//    given:
+//    def defaults = new Defaults()
+//    def ordering = defaults.apiListingReferenceOrdering()
+//    plugin
+//        .groupName("groupName")
+//        .select()
+//        .paths(regex(".*"))
+//        .build()
+//        .apiListingReferenceOrdering(ordering)
+//        .configure(contextBuilder)
+//
+//    def listingsMap = LinkedListMultimap.create()
+//    def listings = [
+//        apiListing(defaults, 1, "/b"),
+//        apiListing(defaults, 2, "/c"),
+//        apiListing(defaults, 2, "/a"),
+//    ]
+//    listings.each {
+//      listingsMap.put("test", it)
+//    }
+//    listingReferenceScanner.scan(_) >> new ApiListingReferenceScanResult(newHashMap())
+//    listingScanner.scan(_) >> listingsMap
+//
+//    when:
+//    Documentation scanned = swaggerApiResourceListing.scan(context())
+//
+//    then:
+//      scanned.resourceListing.apis.size() == 1
+//      scanned.resourceListing.apis.get(0).path == "/groupName/test"
+//      scanned.resourceListing.apis.get(0).description == """Operation with path /a and position 2
+//                                                           |Operation with path /b and position 1
+//                                                           |Operation with path /c and position 2""".stripMargin()
+//
+//    where:
+//    index | path | position
+//    0     | '/b' | 0
+//    1     | '/a' | 0
+//    2     | '/c' | 0
+//  }
 
   def apiListing(Defaults defaults, int position, String path) {
     new ApiListingBuilder(defaults.apiDescriptionOrdering())
